@@ -1,0 +1,148 @@
+{
+    "schemes": [
+        "http"
+    ],
+    "swagger": "2.0",
+    "info": {
+        "description": "API for calculating and managing package sizes for orders",
+        "title": "Packing API",
+        "contact": {},
+        "version": "1.0"
+    },
+    "host": "localhost:8080",
+    "basePath": "/",
+    "paths": {
+        "/order": {
+            "post": {
+                "description": "Calculate the best packing options for an order",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Order"
+                ],
+                "summary": "Create Order",
+                "parameters": [
+                    {
+                        "description": "Order request body",
+                        "name": "order",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Order"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.OrderResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/pack/sizes": {
+            "put": {
+                "description": "Update available package sizes for order packing",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Pack"
+                ],
+                "summary": "Update Package Sizes",
+                "parameters": [
+                    {
+                        "description": "Package sizes request body",
+                        "name": "packSizes",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.PackSizes"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "models.Order": {
+            "type": "object",
+            "properties": {
+                "items": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.OrderPacks": {
+            "type": "object",
+            "properties": {
+                "count": {
+                    "type": "integer"
+                },
+                "size": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.OrderResponse": {
+            "type": "object",
+            "properties": {
+                "order_items": {
+                    "type": "integer"
+                },
+                "order_packs": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.OrderPacks"
+                    }
+                }
+            }
+        },
+        "models.PackSizes": {
+            "type": "object",
+            "properties": {
+                "sizes": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                }
+            }
+        }
+    }
+}

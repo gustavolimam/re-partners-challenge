@@ -23,6 +23,16 @@ func NewOrderHandler(cache *clients.Cache) OrderI {
 	}
 }
 
+// CreateOrder cria um pedido para calcular o melhor empacotamento
+// @Summary Create Order
+// @Description Calculate the best packing options for an order
+// @Tags Order
+// @Accept json
+// @Produce json
+// @Param order body models.Order true "Order request body"
+// @Success 200 {object} models.OrderResponse
+// @Failure 400 {object} map[string]string
+// @Router /order [post]
 func (o *Order) CreateOrder(c echo.Context) error {
 	log.Info().Msg("Receiving a new order...")
 

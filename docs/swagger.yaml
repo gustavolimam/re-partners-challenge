@@ -1,0 +1,96 @@
+basePath: /
+definitions:
+  models.Order:
+    properties:
+      items:
+        type: integer
+    type: object
+  models.OrderPacks:
+    properties:
+      count:
+        type: integer
+      size:
+        type: integer
+    type: object
+  models.OrderResponse:
+    properties:
+      order_items:
+        type: integer
+      order_packs:
+        items:
+          $ref: '#/definitions/models.OrderPacks'
+        type: array
+    type: object
+  models.PackSizes:
+    properties:
+      sizes:
+        items:
+          type: integer
+        type: array
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: API for calculating and managing package sizes for orders
+  title: Packing API
+  version: "1.0"
+paths:
+  /order:
+    post:
+      consumes:
+      - application/json
+      description: Calculate the best packing options for an order
+      parameters:
+      - description: Order request body
+        in: body
+        name: order
+        required: true
+        schema:
+          $ref: '#/definitions/models.Order'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.OrderResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create Order
+      tags:
+      - Order
+  /pack/sizes:
+    put:
+      consumes:
+      - application/json
+      description: Update available package sizes for order packing
+      parameters:
+      - description: Package sizes request body
+        in: body
+        name: packSizes
+        required: true
+        schema:
+          $ref: '#/definitions/models.PackSizes'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Update Package Sizes
+      tags:
+      - Pack
+schemes:
+- http
+swagger: "2.0"
