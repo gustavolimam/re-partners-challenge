@@ -9,12 +9,8 @@ import (
 )
 
 func TestOrder_CalculateOrderPackQty(t *testing.T) {
-	cache := clients.NewCache()
-	cache.Set(constants.PackSizesCacheKey, constants.PackSizesDefault, 5)
-	defer cache.Delete(constants.PackSizesCacheKey)
-
 	type fields struct {
-		cache *clients.Cache
+		cache func() *clients.Cache
 	}
 	type args struct {
 		order models.Order
@@ -29,7 +25,11 @@ func TestOrder_CalculateOrderPackQty(t *testing.T) {
 		{
 			name: "success_case_1",
 			fields: fields{
-				cache: cache,
+				cache: func() *clients.Cache {
+					cache := clients.NewCache()
+					cache.Set(constants.PackSizesCacheKey, constants.PackSizesDefault, 5)
+					return cache
+				},
 			},
 			args: args{
 				order: models.Order{
@@ -51,7 +51,11 @@ func TestOrder_CalculateOrderPackQty(t *testing.T) {
 		{
 			name: "success_case_2",
 			fields: fields{
-				cache: cache,
+				cache: func() *clients.Cache {
+					cache := clients.NewCache()
+					cache.Set(constants.PackSizesCacheKey, constants.PackSizesDefault, 5)
+					return cache
+				},
 			},
 			args: args{
 				order: models.Order{
@@ -80,32 +84,44 @@ func TestOrder_CalculateOrderPackQty(t *testing.T) {
 		{
 			name: "success_case_3",
 			fields: fields{
-				cache: cache,
+				cache: func() *clients.Cache {
+					cache := clients.NewCache()
+					cache.Set(constants.PackSizesCacheKey, []int{4, 100}, 0)
+					return cache
+				},
 			},
 			args: args{
 				order: models.Order{
-					Items: 22350,
+					Items: 10,
 				},
 			},
 			want: []models.OrderPacks{
 				{
-					Size:  5000,
-					Count: 4,
-				},
-				{
-					Size:  2000,
-					Count: 1,
-				},
-				{
-					Size:  250,
-					Count: 2,
+					Size:  4,
+					Count: 3,
 				},
 			},
 		},
 		{
+			name: "error_no_items_to_pack",
+			fields: fields{
+				cache: func() *clients.Cache {
+					return clients.NewCache()
+				},
+			},
+			args: args{
+				order: models.Order{},
+			},
+			want:    nil,
+			wantErr: true,
+		},
+		{
 			name: "error_cache",
 			fields: fields{
-				cache: clients.NewCache(),
+				cache: func() *clients.Cache {
+					cache := clients.NewCache()
+					return cache
+				},
 			},
 			args: args{
 				order: models.Order{
@@ -118,8 +134,10 @@ func TestOrder_CalculateOrderPackQty(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			cache := tt.fields.cache()
+
 			o := &Order{
-				cache: tt.fields.cache,
+				cache: cache,
 			}
 			got, err := o.CalculateOrderPackQty(tt.args.order)
 			if (err != nil) != tt.wantErr {

@@ -59,6 +59,9 @@ func loadServer(cache *clients.Cache) *echo.Echo {
 
 	// Load the HTML file
 	e.Static("/", "web")
+	e.GET("/", func(c echo.Context) error {
+		return c.File("web/index.html")
+	})
 
 	return e
 }
